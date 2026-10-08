@@ -1,0 +1,108 @@
+{
+  "schema_id": "pds-schema-v2",
+  "storage": {
+    "engine": "kvdb.io hosted key-value store",
+    "endpoint": "https://kvdb.io/<bucket>/pds-diary-v1",
+    "shape": "단일 JSON 문서 안에 6개 컬렉션(표)을 배열로 둠. 쓰기는 read → modify → PUT 전체 교체로 직렬화해 다중 개체 변경도 한 번의 쓰기로 커밋된다.",
+    "access": "로그인 없는 공개 앱 계약 — 버킷 URL을 아는 사람은 읽고 쓸 수 있다(7번 과제에서 잠금 예정). 비밀키는 어디에도 없으며 버킷 ID는 접근 식별자다."
+  },
+  "timezone_rules": {
+    "dates": "YYYY-MM-DD 문자열, Asia/Seoul 기준",
+    "timestamps": "ISO 8601 UTC (예: 2026-10-08T08:30:00.000Z). 화면 표시는 항상 Asia/Seoul로 변환",
+    "delay_rule": "지연 = status가 done이 아니고 due_date가 KST 오늘보다 앞선 할 일. 완료된 할 일은 지연으로 세지 않는다.",
+    "duration_unit": "모든 시간 길이는 정수 분(minutes)으로 저장하고 화면에서 'N시간 N분'으로 변환해 표시"
+  },
+  "collections": {
+    "plans": {
+      "description": "계획 표. 현재 값만 담고 과거 값은 plan_revisions에 남는다.",
+      "fields": {
+        "id": "string, pl_ 접두, PK",
+        "title": "string, 계획 제목",
+        "period_start": "YYYY-MM-DD, 기간 시작 (KST)",
+        "period_end": "YYYY-MM-DD, 기간 끝 (KST)",
+        "priority": "integer 1~5, 높을수록 중요",
+        "success_criteria": "string, 성공 기준 문장",
+        "expected_minutes": "integer, 예상 소요(분)",
+        "status": "'active' | 'done'",
+        "carryover_note": "string|null, 돌아보기에서 넘어온 개선 한 줄",
+        "current_rev": "integer, 현재 수정본 번호",
+        "created_at": "ISO UTC", "updated_at": "ISO UTC"
+      }
+    },
+    "plan_revisions": {
+      "description": "계획 수정 이력 표. rev_no=0은 처음 세운 계획. 고칠 때마다 새 행이 추가되고 지우지 않는다.",
+      "fields": {
+        "id": "string, rev_ 접두, PK",
+        "plan_id": "plans.id FK",
+        "rev_no": "integer, 0부터 증가",
+        "note": "string, '처음 세운 계획' 또는 'N차 수정'",
+        "title, period_start, period_end, priority, success_criteria, expected_minutes": "그 시점의 계획 값 스냅샷",
+        "edited_at": "ISO UTC"
+      }
+    },
+    "tasks": {
+      "description": "할 일 표. plans에 plan_id로 연결. 삭제는 deleted_at 소프트 삭제.",
+      "fields": {
+        "id": "string, tk_ 접두, PK",
+        "plan_id": "plans.id FK",
+        "title": "string",
+        "due_date": "YYYY-MM-DD|null, 마감일 (KST)",
+        "priority": "integer 1~5",
+        "tags": "string[]",
+        "expected_minutes": "integer",
+        "status": "'todo' | 'done'",
+        "completed_at": "ISO UTC|null",
+        "deleted_at": "ISO UTC|null — 값이 있으면 목록·집계에서 제외",
+        "created_at": "ISO UTC", "updated_at": "ISO UTC"
+      }
+    },
+    "executions": {
+      "description": "실행 기록 표. tasks에 task_id로 연결. 계획·할 일 값을 덮어쓰지 않는 별개 행.",
+      "fields": {
+        "id": "string, ex_ 접두, PK",
+        "task_id": "tasks.id FK",
+        "started_at": "ISO UTC, 시작 시각",
+        "ended_at": "ISO UTC, 끝난 시각",
+        "actual_minutes": "integer, 실제로 걸린 시간(분)",
+        "blocker_reason": "string, 막혔던 이유. 비어 있으면 막힘 없음",
+        "created_at": "ISO UTC"
+      }
+    },
+    "completions": {
+      "description": "완료 기록 표 — 멱등키 저장. 같은 할 일의 완료는 key 하나만 존재한다.",
+      "fields": {
+        "key": "string, 멱등키 'complete:<task_id>'. 같은 요청 반복은 같은 키라 한 건만 남는다",
+        "task_id": "tasks.id",
+        "completed_at": "ISO UTC"
+      },
+      "constraint": "key는 컬렉션 안에서 유일. 완료 버튼을 연달아 눌러도 dedupe + 상태 게이트 + 버튼 잠금으로 기록 1건·집계 +1만 반영된다."
+    },
+    "improvements": {
+      "description": "돌아보기에서 다음 계획으로 넘기는 한 줄 표.",
+      "fields": {
+        "id": "string, im_ 접두, PK",
+        "text": "string, 개선 한 줄",
+        "period_start": "YYYY-MM-DD|null", "period_end": "YYYY-MM-DD|null",
+        "applied_plan_id": "plans.id|null — 다음 계획으로 넘기면 새 계획 id가 기록된다",
+        "created_at": "ISO UTC"
+      }
+    }
+  },
+  "relations": [
+    "plan_revisions.plan_id → plans.id (N:1)",
+    "tasks.plan_id → plans.id (N:1)",
+    "executions.task_id → tasks.id (N:1)",
+    "completions.task_id → tasks.id (1:0..1, 멱등키 유일)",
+    "improvements.applied_plan_id → plans.id (0..1:1)"
+  ],
+  "aggregation_rules": {
+    "plan_count": "기간이 돌아보기 범위와 겹치는 plans 수",
+    "task_count": "그 계획들에 딸린 deleted_at이 없는 tasks 수",
+    "done_count": "그중 status=done 인 수",
+    "delayed_count": "그중 status!=done 이고 due_date < 오늘(KST) 인 수",
+    "blocked_count": "blocker_reason이 비어 있지 않은 실행 기록을 하나라도 가진 tasks 수",
+    "expected_sum": "대상 tasks의 expected_minutes 합계",
+    "actual_sum": "대상 tasks에 딸린 executions의 actual_minutes 합계",
+    "diff": "actual_sum - expected_sum (대상이 없으면 0)"
+  }
+}

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>플랜두씨 다이어리 — 계획 · 실행 · 돌아보기</title>
+<meta name="description" content="계획(Plan) → 실제로 한 일(Do) → 돌아보기(See)가 하나로 이어지는 공개 다이어리">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<aside class="rail" id="rail">
+  <div class="brand">
+    <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    <div>
+      <strong>플랜두씨</strong>
+      <span>Plan · Do · See 다이어리</span>
+    </div>
+  </div>
+  <nav class="rail-nav" aria-label="주 화면">
+    <button class="nav-item" data-view="plans" type="button"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg><span>계획</span></button>
+    <button class="nav-item" data-view="tasks" type="button"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8.5 12.2l2.4 2.4 4.8-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>할 일</span></button>
+    <button class="nav-item" data-view="log" type="button"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 9.5V13l2.4 1.6M9 2.5h6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><span>기록</span></button>
+    <button class="nav-item" data-view="review" type="button"><svg viewBox="0 0 24 24"><path d="M4 19V9m5.5 10V5M15 19v-7m5.5 7v-11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>돌아보기</span></button>
+  </nav>
+  <div class="rail-foot">
+    <div class="sync-pill" id="syncPill" data-state="loading">불러오는 중…</div>
+    <button class="ghost-btn" id="exportBtn" type="button">
+      <svg viewBox="0 0 24 24"><path d="M12 3v10.5m0 0l-4-4m4 4l4-4M5 16v3.5A1.5 1.5 0 006.5 21h11a1.5 1.5 0 001.5-1.5V16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      내 자료보내기
+    </button>
+  </div>
+</aside>
+
+<div class="stage">
+  <header class="topbar">
+    <div class="brand small">
+      <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <strong>플랜두씨</strong>
+    </div>
+    <span class="sync-pill" id="syncPillM" data-state="loading">불러오는 중…</span>
+  </header>
+
+  <p class="public-notice" role="note">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 8h.01M12 11v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    지금은 로그인이 없어 링크를 아는 사람은 누구나 볼 수 있습니다. 남이 봐도 괜찮은 내용만 넣으세요.
+  </p>
+
+  <main id="main" class="view-host" tabindex="-1">
+    <div class="skeleton-stack" id="bootSkeleton" aria-hidden="true">
+      <div class="skel skel-lg"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div>
+    </div>
+  </main>
+</div>
+
+<nav class="tabbar" aria-label="주 화면">
+  <button class="nav-item" data-view="plans" type="button"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg><span>계획</span></button>
+  <button class="nav-item" data-view="tasks" type="button"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8.5 12.2l2.4 2.4 4.8-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>할 일</span></button>
+  <button class="nav-item" data-view="log" type="button"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 9.5V13l2.4 1.6M9 2.5h6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><span>기록</span></button>
+  <button class="nav-item" data-view="review" type="button"><svg viewBox="0 0 24 24"><path d="M4 19V9m5.5 10V5M15 19v-7m5.5 7v-11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>돌아보기</span></button>
+</nav>
+
+<button class="fab" id="fab" type="button" aria-label="새로 추가">
+  <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+</button>
+
+<div class="modal-root" id="modalRoot" hidden>
+  <div class="modal-backdrop" data-close-modal></div>
+  <div class="modal-sheet" role="dialog" aria-modal="true" id="modalSheet"></div>
+</div>
+
+<div class="toast-zone" id="toastZone" aria-live="polite"></div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
