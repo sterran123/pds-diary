@@ -16,11 +16,22 @@ export function emptyDoc() {
   };
 }
 
+const COLLECTIONS = ['plans', 'plan_revisions', 'tasks', 'executions', 'completions', 'improvements'];
+const asArr = v => (Array.isArray(v) ? v : (v && typeof v === 'object' ? Object.values(v) : []));
+
+// RTDB는 빈 배열 키를 지우고, 배열을 {0:...,1:...} 객체로 돌려줄 수 있다 → 항상 배열로 정규화
+export function normalizeDoc(data) {
+  if (!data) return null;
+  const doc = { schema_version: 'pds-diary-v1', meta: {}, ...data };
+  for (const key of COLLECTIONS) doc[key] = asArr(doc[key]);
+  return doc;
+}
+
 export async function loadDoc() {
   const res = await fetch(DOC_URL, { cache: 'no-store' });
   if (!res.ok) throw new Error(`읽기 실패 (${res.status})`);
   const data = await res.json();
-  return data ?? null; // RTDB는 없는 경로를 200 + null로 돌려준다
+  return normalizeDoc(data); // RTDB는 없는 경로를 200 + null로 돌려준다
 }
 
 export async function saveDoc(doc) {

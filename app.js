@@ -800,7 +800,7 @@ async function boot() {
   setSync('loading', '불러오는 중…');
   try {
     let doc = await Store.loadDoc();
-    if (!doc || !doc.meta?.seeded) {
+    if (!doc || (!doc.plans.length && !doc.tasks.length && !doc.executions.length)) {
       setSync('saving', '처음 자료를 싣는 중…');
       await Store.saveDoc(seedDoc());
       doc = await Store.loadDoc();
