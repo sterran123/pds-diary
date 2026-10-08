@@ -286,6 +286,7 @@ body { display: flex; }
 .rev-no { font-size: 12px; font-weight: 750; color: var(--accent); margin-bottom: 4px; }
 .rev-fields { font-size: 13px; color: var(--ink-2); display: grid; gap: 3px; }
 .rev-fields dt { color: var(--ink-3); font-weight: 600; }
+.rev-fields dd { margin: 0; }
 .drill-list { display: flex; flex-direction: column; gap: 8px; max-height: 50vh; overflow: auto; }
 
 /* ── 모달 / 시트 ─────────────────────── */

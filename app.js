@@ -254,8 +254,12 @@ function seedDoc() {
     { id: 'tk_repo', title: 'GitHub 저장소 생성·Pages 배포 연결', due_date: d, priority: 4, tags: ['인프라', '배포'], expected_minutes: 40 },
     { id: 'tk_review', title: '돌아보기 집계·근거 기록 드릴다운 구현', due_date: '2026-10-09', priority: 4, tags: ['데이터', '프론트'], expected_minutes: 90 },
     { id: 'tk_verify', title: 'XSS·비밀값·새로고침 지속성 자체 검증', due_date: '2026-10-09', priority: 3, tags: ['검증'], expected_minutes: 45 },
-    { id: 'tk_submit', title: 'SUBMISSION 문서·제출 폼 작성', due_date: '2026-10-09', priority: 4, tags: ['문서', '제출'], expected_minutes: 30 }
+    { id: 'tk_submit', title: 'SUBMISSION 문서·제출 폼 작성', due_date: '2026-10-09', priority: 4, tags: ['문서', '제출'], expected_minutes: 30 },
+    { id: 'tk_req', title: '과제 요구사항 정독·통과 기준 추출', due_date: '2026-10-07', priority: 3, tags: ['문서', '조사'], expected_minutes: 25 },
+    { id: 'tk_xss', title: '스크립트 모양 글자 표시 점검 — <script>alert(1)</script> 이 그대로 보이면 통과', due_date: '2026-10-09', priority: 2, tags: ['검증', '보안'], expected_minutes: 15 }
   ].map(t => ({ status: 'todo', completed_at: null, deleted_at: null, plan_id: plan.id, created_at: now, updated_at: now, ...t }));
+  tasks[0].status = 'done';
+  tasks[0].completed_at = '2026-10-08T08:45:00.000Z';
   const executions = [
     { id: 'ex_1', task_id: 'tk_store', started_at: '2026-10-08T08:05:00.000Z', ended_at: '2026-10-08T08:20:00.000Z', actual_minutes: 15, blocker_reason: '', created_at: now },
     { id: 'ex_2', task_id: 'tk_store', started_at: '2026-10-08T08:20:00.000Z', ended_at: '2026-10-08T08:45:00.000Z', actual_minutes: 25, blocker_reason: 'kvdb.io가 이메일 인증을 요구해 대안 서비스를 추가로 조사했다', created_at: now },
@@ -263,6 +267,7 @@ function seedDoc() {
   ];
   const doc = Store.emptyDoc();
   doc.meta.seeded = true;
+  doc.completions.push({ key: 'complete:tk_store', task_id: 'tk_store', completed_at: '2026-10-08T08:45:00.000Z' });
   doc.plans.push(plan);
   doc.plan_revisions.push({
     id: 'rev_t06_0', plan_id: plan.id, rev_no: 0, edited_at: plan.created_at, note: '처음 세운 계획',
@@ -405,6 +410,7 @@ function viewTasks() {
   bar.append(sWrap);
 
   const tags = [...new Set(activeTasks(doc).flatMap(t => t.tags))];
+  if (state.taskTag !== 'all' && !tags.includes(state.taskTag)) tags.push(state.taskTag);
   const fRow = el('div', 'filter-row');
   for (const [v, label] of [['all', '전체'], ['todo', '진행 중'], ['done', '완료'], ['delayed', '지연'], ['deleted', '삭제됨']]) {
     const c = el('button', `chip selectable${state.taskStatus === v ? ' on' : ''}`, label);
