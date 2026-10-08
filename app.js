@@ -1,4 +1,4 @@
-import * as Store from './store.js';
+import * as Store from './store.js?v=2';
 
 const $ = id => document.getElementById(id);
 const main = $('main');
