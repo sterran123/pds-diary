@@ -1,9 +1,7 @@
-// 저장소 어댑터 — kvdb.io (가입 없는 호스팅 KV 저장소)
-// 버킷 URL 자체가 접근 식별자다. 과제 계약상 로그인이 없는 공개 앱이므로
-// 링크를 아는 사람이 읽고 쓸 수 있다. 잠금은 7번 과제에서 다룬다.
-const BUCKET_URL = 'https://kvdb.io/Y4iYs5RBcvWiMi4FjsA1EX';
-const DOC_KEY = 'pds-diary-v1';
-const DOC_URL = `${BUCKET_URL}/${encodeURIComponent(DOC_KEY)}`;
+// 저장소 어댑터 — Firebase Realtime Database (프로젝트 pds-diary-sterran)
+// 규칙: {".read":true,".write":true} — 로그인 없는 공개 앱 계약에 맞춰
+// 링크를 아는 사람은 누구나 읽고 쓸 수 있다. 잠금은 7번 과제에서 다룬다.
+const DOC_URL = 'https://pds-diary-sterran-default-rtdb.firebaseio.com/pds-diary-v1.json';
 
 export function emptyDoc() {
   return {
@@ -20,9 +18,9 @@ export function emptyDoc() {
 
 export async function loadDoc() {
   const res = await fetch(DOC_URL, { cache: 'no-store' });
-  if (res.status === 404) return null;
   if (!res.ok) throw new Error(`읽기 실패 (${res.status})`);
-  return res.json();
+  const data = await res.json();
+  return data ?? null; // RTDB는 없는 경로를 200 + null로 돌려준다
 }
 
 export async function saveDoc(doc) {

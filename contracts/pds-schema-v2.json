@@ -1,10 +1,10 @@
 {
   "schema_id": "pds-schema-v2",
   "storage": {
-    "engine": "kvdb.io hosted key-value store",
-    "endpoint": "https://kvdb.io/<bucket>/pds-diary-v1",
-    "shape": "단일 JSON 문서 안에 6개 컬렉션(표)을 배열로 둠. 쓰기는 read → modify → PUT 전체 교체로 직렬화해 다중 개체 변경도 한 번의 쓰기로 커밋된다.",
-    "access": "로그인 없는 공개 앱 계약 — 버킷 URL을 아는 사람은 읽고 쓸 수 있다(7번 과제에서 잠금 예정). 비밀키는 어디에도 없으며 버킷 ID는 접근 식별자다."
+    "engine": "Firebase Realtime Database (프로젝트 pds-diary-sterran, us-central1)",
+    "endpoint": "https://pds-diary-sterran-default-rtdb.firebaseio.com/pds-diary-v1.json",
+    "shape": "경로 /pds-diary-v1 아래 단일 JSON 문서 안에 6개 컬렉션(표)을 배열로 둠. 쓰기는 read → modify → PUT 전체 교체로 직렬화해 다중 개체 변경도 한 번의 쓰기로 커밋된다.",
+    "access": "로그인 없는 공개 앱 계약 — 보안 규칙 {\".read\":true,\".write\":true}로 링크를 아는 사람은 읽고 쓸 수 있다(7번 과제에서 잠금 예정). 비밀키는 어디에도 없으며 DB URL은 접근 주소다."
   },
   "timezone_rules": {
     "dates": "YYYY-MM-DD 문자열, Asia/Seoul 기준",
