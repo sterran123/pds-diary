@@ -94,6 +94,9 @@ body { display: flex; }
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   max-width: 880px; margin: 0 auto;
 }
+.topbar-right { display: flex; align-items: center; gap: 8px; }
+.ghost-btn.icon-only { padding: 8px; }
+.ghost-btn.icon-only svg { width: 17px; height: 17px; }
 
 .rail-nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
 .rail-nav .nav-item {

@@ -1,4 +1,4 @@
-import * as Store from './store.js?v=2';
+﻿import * as Store from './store.js?v=3';
 
 const $ = id => document.getElementById(id);
 const main = $('main');
@@ -783,7 +783,7 @@ $('fab').addEventListener('click', () => {
   planModal(null);
 });
 
-$('exportBtn').addEventListener('click', async () => {
+const exportData = async () => {
   try {
     const doc = await Store.loadDoc();
     const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
@@ -794,7 +794,9 @@ $('exportBtn').addEventListener('click', async () => {
     URL.revokeObjectURL(a.href);
     toast('전체 자료를 파일로 보냈습니다');
   } catch { toast('보내기 실패 — 다시 시도하세요', true); }
-});
+};
+$('exportBtn').addEventListener('click', exportData);
+$('exportBtnM').addEventListener('click', exportData);
 
 async function boot() {
   setSync('loading', '불러오는 중…');

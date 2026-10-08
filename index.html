@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -8,7 +8,7 @@
 <meta name="description" content="계획(Plan) → 실제로 한 일(Do) → 돌아보기(See)가 하나로 이어지는 공개 다이어리">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="styles.css?v=2">
+<link rel="stylesheet" href="styles.css?v=3">
 </head>
 <body>
 
@@ -41,7 +41,12 @@
       <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
       <strong>플랜두씨</strong>
     </div>
-    <span class="sync-pill" id="syncPillM" data-state="loading">불러오는 중…</span>
+    <div class="topbar-right">
+      <button class="ghost-btn icon-only" id="exportBtnM" type="button" aria-label="내 자료보내기" title="내 자료보내기">
+        <svg viewBox="0 0 24 24"><path d="M12 3v10.5m0 0l-4-4m4 4l4-4M5 16v3.5A1.5 1.5 0 006.5 21h11a1.5 1.5 0 001.5-1.5V16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <span class="sync-pill" id="syncPillM" data-state="loading">불러오는 중…</span>
+    </div>
   </header>
 
   <p class="public-notice" role="note">
@@ -74,6 +79,6 @@
 
 <div class="toast-zone" id="toastZone" aria-live="polite"></div>
 
-<script type="module" src="app.js?v=2"></script>
+<script type="module" src="app.js?v=3"></script>
 </body>
 </html>
